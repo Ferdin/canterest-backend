@@ -1,0 +1,51 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Virtual environments ---
+venv/
+.venv/
+env/
+ENV/
+.python-version
+
+# --- Environment variables / secrets ---
+.env
+.env.local
+.env.*.local
+
+# --- Distribution / packaging ---
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- Testing / coverage ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# --- Alembic (keep migrations, ignore local db) ---
+*.db
+*.sqlite3
+*.sqlite3-journal
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+
+# --- Type checking / linting caches ---
+.mypy_cache/
+.ruff_cache/
