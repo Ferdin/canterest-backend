@@ -10,7 +10,7 @@ from auth import hash_password, verify_password, create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-GOOGLE_CLIENT_ID = "googleusercontent.com"
+GOOGLE_CLIENT_ID = "387497052520-15s98jerl3c6lkl1djes1n7e1brmh7l5.apps.googleusercontent.com"
 
 #---------------Schemas-------------------
 
