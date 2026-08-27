@@ -4,9 +4,11 @@ from pydantic import BaseModel, EmailStr
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
-from database import get_db
-from models import User
-from auth import hash_password, verify_password, create_access_token
+from app.database import get_db
+from app.models import User
+from app.core.security import hash_password, verify_password, create_access_token
+from app.core.dependencies import get_current_user_optional
+from app.schemas.user import MeOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -74,12 +76,12 @@ def google_login(payload: GoogleIn, db: Session = Depends(get_db)):
     if not user:
         # link to an existing email/password account if one matches, else create new          
         user = db.query(User).filter(User.email == email).first()
-        if user
+        if user:
             usre.google_id = google_id
         else:
             user = User(
                 email=email,
-                name=idinfo.get('name', email.split("@"[0])).
+                name=idinfo.get('name', email.split("@"[0])),
                 avatar_url=idinfo.get("picture"),
                 google_id=google_id,
             )          
@@ -89,3 +91,9 @@ def google_login(payload: GoogleIn, db: Session = Depends(get_db)):
 
     token = create_access_token({"sub": str(user.id)})
     return {"access_token": token}        
+
+@router.get("/me", response_model=MeOut)
+def get_me(current_user=Depends(get_current_user_optional)):
+    if current_user is None:
+        return {"authorized": False, "user": None}
+    return {"authorized": True, "user": current_user}    
