@@ -26,7 +26,7 @@ class LoginIn(BaseModel):
     password: str
 
 class GoogleIn(BaseModel):
-    credentials: str # ID Token from frontend
+    credential: str # ID Token from frontend
 
 class TokenOut(BaseModel):
     access_token: str
@@ -64,7 +64,7 @@ def login(payload: LoginIn, db: Session = Depends(get_db)):
 def google_login(payload: GoogleIn, db: Session = Depends(get_db)):
     try:
         idinfo = id_token.verify_oauth2_token(
-            payload.credentials, google_requests.Reques(), settings.google_client_id
+            payload.credential, google_requests.Request(), settings.google_client_id
         )
     except ValueError:
         raise HTTPException(401, "Invalid Google Token")
@@ -77,11 +77,11 @@ def google_login(payload: GoogleIn, db: Session = Depends(get_db)):
         # link to an existing email/password account if one matches, else create new          
         user = db.query(User).filter(User.email == email).first()
         if user:
-            usre.google_id = google_id
+            user.google_id = google_id
         else:
             user = User(
                 email=email,
-                name=idinfo.get('name', email.split("@"[0])),
+                name=idinfo.get('name', email.split("@")[0]),
                 avatar_url=idinfo.get("picture"),
                 google_id=google_id,
             )          
