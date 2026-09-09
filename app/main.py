@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth  # Import your router file
+from app.routers import auth, router, pins  # Import your router file
+from fastapi.staticfiles import StaticFiles 
 
 app = FastAPI()
 
@@ -11,6 +12,8 @@ origins = [
     "http://127.0.0.1:5173"
 ]
 
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -20,3 +23,5 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(uploads.router)
+app.include_router(pins.router)

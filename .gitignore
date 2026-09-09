@@ -49,3 +49,7 @@ Thumbs.db
 # --- Type checking / linting caches ---
 .mypy_cache/
 .ruff_cache/
+
+# --- Uploaded media (ignore contents, keep folder structure) ---
+app/static/uploads/*
+!app/static/uploads/.gitkeep
