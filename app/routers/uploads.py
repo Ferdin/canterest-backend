@@ -15,9 +15,13 @@ MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
 @router.post("/media")
 async def upload_media(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user), # only logged-in users can upload
 ):
     ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(400, f"Unsupported file type: {ext}")
+
+    contents = await file.read()    
     if len(contents) > MAX_FILE_SIZE:
         raise HTTPException(400, "File too large (max 20MB)")
 

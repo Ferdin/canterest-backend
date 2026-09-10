@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import optional
+from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 class PinCreate(BaseModel):
     media_url: str #required
@@ -7,8 +7,8 @@ class PinCreate(BaseModel):
     description: Optional[str] = None
     link: Optional[str] = None
     board_id: Optional[str] = None
-    topics: Optinal[str] = None
-    tagged_products: Optinal[str] = None
+    topics: Optional[list[str]] = None
+    tagged_products: Optional[list[str]] = None
     alt_text: Optional[str] = None
     mark_as_ai_modified: bool = False
     includes_ai_generated_person: bool = False
@@ -19,6 +19,5 @@ class PinOut(PinCreate):
     id: int
     owner_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
             

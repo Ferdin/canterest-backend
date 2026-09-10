@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, router, pins  # Import your router file
+from app.routers import auth, uploads, pins  # Import your router file
 from fastapi.staticfiles import StaticFiles 
 
 app = FastAPI()
