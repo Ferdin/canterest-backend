@@ -1,8 +1,12 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, computed_field
+from datetime import datetime, timedelta, timezone
 from typing import Optional
+
+DRAFT_EXPIRATION_DAYS = 30
 
 class PinCreate(BaseModel):
     media_url: str #required
+    status: Optional[str] = "draft"
     title: Optional[str] = None
     description: Optional[str] = None
     link: Optional[str] = None
@@ -33,6 +37,21 @@ class PinUpdate(BaseModel):
 class PinOut(PinCreate):
     id: int
     owner_id: int
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+    @computed_field
+    @property
+    def days_until_expiration(self) -> Optional[int]:
+        if self.status != "draft":
+            return None
+
+        created = self.created_at
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)    
+
+        expires_at = created + timedelta(days=DRAFT_EXPIRATION_DAYS)
+        remaining = (expires_at - datetime.now(timezone.utc)).days
+        return max(remaining, 0)    
             

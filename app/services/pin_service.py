@@ -1,6 +1,15 @@
 from sqlalchemy.orm import Session
 from app.models.pin import Pin
 from app.schemas.pin import PinCreate
+from datetime import datetime, timedelta, timezone
+
+def _purge_expired_drafts(db: Session, owner_id: int | None = None):
+    cutoff = datetime.now(timezone.utc) - timedelta(days=DRAFT_EXPIRATION_DAYS)
+    query = db.query(Pin).filter(Pin.status == "draft", Pin.created_at < cutoff)
+    if owner_id is not None:
+        query = query.filter(Pin.owner_id == owner_id)
+    query.delete(synchronize_session=False)
+    db.commit()    
 
 def create_pin(db: Session, owner_id: int, payload: PinCreate) -> Pin:
     pin = Pin(owner_id=owner_id, **payload.model_dump())
