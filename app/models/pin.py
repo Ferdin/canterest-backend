@@ -9,6 +9,7 @@ class Pin(Base):
 
     # required
     media_url = Column(String, nullable=False)
+    status = Column(String, default="draft", nullable=False)
 
     # optional fields from the creation form
     title = Column(String, nullable=True)
