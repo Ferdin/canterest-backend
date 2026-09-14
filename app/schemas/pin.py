@@ -29,7 +29,7 @@ class PinUpdate(BaseModel):
     topics: Optional[list[str]] = None
     tagged_products: Optional[str] = None
     alt_text: Optional[str] = None
-    mark_as_ai_modified: Optional[str] = None
+    mark_as_ai_modified: Optional[bool] = None
     includes_ai_generated_person: Optional[bool] = None
     allow_comments: Optional[bool] = None
     show_similar_products: Optional[bool] = None
