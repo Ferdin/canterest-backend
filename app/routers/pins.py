@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.core.dependencies import get_current_user
+from app.core.dependencies import get_current_user, get_current_user_optional
 from app.models.user import User
 from app.schemas.pin import PinCreate, PinUpdate, PinOut
 from app.services import pin_service
@@ -33,10 +33,22 @@ def update_pin(
 def list_pins(
     status: str | None = None,
     mine: bool = False,
+    username: str | None = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User | None = Depends(get_current_user_optional)
 ):
-    owner_id = current_user.id if mine else None
+    owner_id = None
+
+    if mine:
+        if not current_user:
+            raise HTTPException(401, "Not authenticated")
+        owner_id = current_user.id
+    elif username:
+        target_user = db.query(User).filter(User.username == username).first()
+        if not target_user:
+            raise HTTPException(404, "User not found")
+        owner_id = target_user.id
+        status = status or "published" # public viewers only see published pins by default
     return pin_service.get_pins(db, owner_id=owner_id, status=status)
 
 @router.get("/{pin_id}", response_model=PinOut)
