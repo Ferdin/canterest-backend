@@ -9,6 +9,7 @@ from app.models import User
 from app.core.security import hash_password, verify_password, create_access_token
 from app.core.dependencies import get_current_user_optional
 from app.schemas.user import MeOut
+from app.services.auth_service import generate_username_from_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -79,11 +80,13 @@ def google_login(payload: GoogleIn, db: Session = Depends(get_db)):
         if user:
             user.google_id = google_id
         else:
+            username = generate_username_from_email(db, email)
             user = User(
                 email=email,
                 name=idinfo.get('name', email.split("@")[0]),
                 avatar_url=idinfo.get("picture"),
                 google_id=google_id,
+                username=username,
             )          
             db.add(user)
         db.commit()
