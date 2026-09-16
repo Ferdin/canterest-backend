@@ -15,7 +15,7 @@ class Pin(Base):
     title = Column(String, nullable=True)
     description = Column(String, nullable=True)
     link = Column(String, nullable=True)
-    board_id = Column(Integer, nullable=True) # ForeignKey("boards.id") in the middle of the Column after creating the Board Model
+    board_id = Column(Integer, ForeignKey("boards.id"), nullable=True) # ForeignKey("boards.id") in the middle of the Column after creating the Board Model
     topics = Column(JSON, nullable=True)
     tagged_products = Column(JSON, nullable=True)
     alt_text = Column(String, nullable=True)
