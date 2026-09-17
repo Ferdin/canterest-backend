@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, uploads, pins, users  # Import your router file
+from app.routers import auth, uploads, pins, users, boards  # Import your router file
 from fastapi.staticfiles import StaticFiles 
 
 app = FastAPI()
@@ -26,3 +26,4 @@ app.include_router(auth.router)
 app.include_router(uploads.router)
 app.include_router(pins.router)
 app.include_router(users.router)
+app.include_router(boards.router)

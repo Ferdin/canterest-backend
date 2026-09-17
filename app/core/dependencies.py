@@ -38,5 +38,5 @@ def get_current_user(
 ) -> User:
     user = get_current_user_optional(authorization, db)
     if user is None:
-        raise HTTPSException(status_code=401, detail="Not authenticated")
+        raise HTTPException(status_code=401, detail="Not authenticated")
     return user    
