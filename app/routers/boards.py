@@ -20,11 +20,29 @@ def create_board(
 @router.get("", response_model=list[BoardOut])
 def list_boards(
     mine: bool = False,
+    username: str | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    owner_id = current_user.id if mine else None
-    return board_service.get_boards(db, owner_id=owner_id)
+    owner_id = None
+
+    if mine:
+        if not current_user:
+            raise HTTPException(401, "Not authenticated")
+        owner_id = current_user.id
+    elif username:
+        target_user = db.query(User).filter(User.username == username).first()
+        if not target_user:
+            raise HTTPException(404, "User not found")
+        owner_id = target_user.id
+
+    boards = board_service.get_boards(db, owner_id=owner_id)
+
+    # public viewers never see someone else's secret boards
+    if username and (not current_user or current_user.id != owner_id):
+        boards = [b for b in boards if not b.is_secret]
+
+    return boards
 
 @router.get("/{board_id}", response_model=BoardOut)
 def get_board(board_id: int, db: Session = Depends(get_db)):
