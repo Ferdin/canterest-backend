@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, computed_field
+from pydantic import BaseModel, ConfigDict, computed_field, Field
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -10,7 +10,7 @@ class PinCreate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     link: Optional[str] = None
-    board_id: Optional[str] = None
+    board_id: Optional[int] = None
     topics: Optional[list[str]] = None
     tagged_products: Optional[list[str]] = None
     alt_text: Optional[str] = None
@@ -25,7 +25,7 @@ class PinUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     link: Optional[str] = None
-    board_id: Optional[str] = None
+    board_id: Optional[int] = None
     topics: Optional[list[str]] = None
     tagged_products: Optional[str] = None
     alt_text: Optional[str] = None
@@ -54,4 +54,31 @@ class PinOut(PinCreate):
         expires_at = created + timedelta(days=DRAFT_EXPIRATION_DAYS)
         remaining = (expires_at - datetime.now(timezone.utc)).days
         return max(remaining, 0)    
-            
+
+class PinUser(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    username: str
+    avatar_url: Optional[str] = None  # stays None if User has no avatar field
+
+
+class PinDetail(PinOut):
+    creator: PinUser
+    like_count: int
+    liked_by_me: bool
+
+
+class CommentCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    body: str = Field(min_length=1, max_length=500)
+
+
+class CommentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    body: str
+    created_at: datetime
+    author: PinUser

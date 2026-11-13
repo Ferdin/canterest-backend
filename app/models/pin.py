@@ -31,3 +31,5 @@ class Pin(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     owner = relationship("User", backref="pins")
+    comments = relationship("Comment", cascade="all, delete-orphan")
+    likes = relationship("PinLike", cascade="all, delete-orphan")
